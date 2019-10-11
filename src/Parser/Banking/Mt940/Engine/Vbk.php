@@ -24,15 +24,15 @@ class Vbk extends Spk
 
     protected function parseTransactionAccount()
     {
-        $input = $this->sanitizeOutput($this->sanitizeInput($this->getCurrentTransactionData()));
-        $input = str_replace([' ', PHP_EOL], '', $input);
+        $input1 = $this->sanitizeInput($this->getCurrentTransactionData());
+        $input2 = $this->sanitizeOutput($input1);
+        $input3 = str_replace([' ', PHP_EOL], '', $input2);
         $results = [];
 
-        if (preg_match('/IBAN:([A-Z]{2}[0-9]+)/', $input, $results) && !empty($results[1])) {
+        if (preg_match('/IBAN:([A-Z]{2}[0-9]+)/', $input3, $results) && !empty($results[1])) {
 
-            if (strlen($results[1]) > 50) {
-                \Neos\Flow\var_dump($input, __METHOD__ . ':' . __LINE__);
-                throw new \Exception('TransactionAccount could not be parsed, account results in: ' . $results[1], 1570712418);
+            if (strlen($results[1]) > 50 || strlen($results[1]) < 15) {
+                    throw new \Exception('TransactionAccount could not be parsed, account results in: ' . $results[1], 1570712418);
             }
 
             return $this->sanitizeOutput($results[1]);
@@ -80,7 +80,7 @@ class Vbk extends Spk
      */
     private function sanitizeInput(string $input): string
     {
-        $output = str_replace(PHP_EOL, '', $this->getCurrentTransactionData());
+        $output = str_replace([PHP_EOL, "\r", "\n", "\r\n"], '', $input);
         $output = str_replace('IB AN:?', 'IBAN:?', $output);
         return $output;
     }
@@ -91,8 +91,7 @@ class Vbk extends Spk
      */
     private function sanitizeOutput(string $input): string
     {
-        $output = str_replace(['?21', '?22', '?23', '?24', '?25', '?26', '?27', '?28', '?29', '?30', '?31', '?32', '?33', '?60', '?61', '?62'], ' ', $input);
-        $output = trim($output);
+        $output = trim(str_replace(['?21', '?22', '?23', '?24', '?25', '?26', '?27', '?28', '?29', '?30', '?31', '?32', '?33', '?60', '?61', '?62'], ' ', $input));
         return $output;
     }
 }
