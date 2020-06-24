@@ -32,7 +32,7 @@ class Vbk extends Spk
         if (preg_match('/IBAN:([A-Z]{2}[0-9]+)/', $input3, $results) && !empty($results[1])) {
 
             if (strlen($results[1]) > 50 || strlen($results[1]) < 15) {
-                    throw new \Exception('TransactionAccount could not be parsed, account results in: ' . $results[1], 1570712418);
+                //throw new \Exception('TransactionAccount could not be parsed, account results in: ' . $results[1], 1570712418);
             }
 
             return $this->sanitizeOutput($results[1]);
